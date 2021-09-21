@@ -21,12 +21,12 @@ namespace CarRacing
 
             Random speedRandomizer = new Random();
 
-            cars.Add(new Sportcar(speedRandomizer, "№1"));
-            cars.Add(new Sportcar(speedRandomizer, "№2"));
-            cars.Add(new Sportcar(speedRandomizer, "№3"));
-            cars.Add(new Sportcar(speedRandomizer, "№4"));
+            cars.Add(new Sportcar(speedRandomizer, "Audi R8"));
+            cars.Add(new Truck(speedRandomizer, "Kenworth T680"));
+            cars.Add(new Sportcar(speedRandomizer, "GT40"));
+            cars.Add(new Sportcar(speedRandomizer, "Bugatti Veyron"));
 
-            Game game = new Game(cars);
+            Game game = new Game(cars, 100);
 
             game.StartRacing(100);
 

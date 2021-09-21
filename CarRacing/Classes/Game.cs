@@ -14,15 +14,17 @@ namespace CarRacing.Classes
         public delegate void FinishHandler(Car WinCar);
         public event UpdateHandler Updated;
         public event FinishHandler Finished;
-        List<Car> _cars = new List<Car>();
 
-        public Game(List<Car> cars)
+        List<Car> _cars = new List<Car>();
+        private int _traceLenght;
+        public Game(List<Car> cars, int traceLenght)
         {
             _cars = cars;
             foreach (var car in _cars)
             {
                 car.SubscribeOnGameEvents(this);
             }
+            _traceLenght = traceLenght;
         }
 
         public IReadOnlyList<Car> Cars { get => _cars.AsReadOnly(); }
@@ -30,23 +32,16 @@ namespace CarRacing.Classes
         {
             RacingCycle(delayBeetwenUpdates);
         }
-        private void WriteCarsPositions()
+        private void WriteTextQuickly(List<string> linesToWrite, int xOffset, int yOffset)
         {
             Console.CursorVisible = false;
-            List<string> textToWrite = new List<string>();
-            foreach (var car in Cars)
-            {
-                textToWrite.Add($"{car.Name}: {Math.Round(car.Position, 2)}\n");
-            }
             int i = 0;
-            
-            foreach (var str in textToWrite)
+            foreach (var line in linesToWrite)
             {
                 int j = 0;
-                foreach (var ch in str)
+                foreach (var ch in line)
                 {
-                    Console.SetCursorPosition(j, i); // Быстрое обновление консоли
-                    
+                    Console.SetCursorPosition(j + xOffset, i + yOffset); // Быстрое обновление консоли
                     Console.Write(ch);
                     j++;
                 }
@@ -54,12 +49,35 @@ namespace CarRacing.Classes
             }
             Console.CursorVisible = true;
         }
+        private void WriteCarsPositions()
+        {
+            
+            List<string> textToWrite = new List<string>();
+            foreach (var car in Cars)
+            {
+                string line = $"{car.Name}:".PadRight(19);
+                for (int tracePartIndex = 0; tracePartIndex < _traceLenght; tracePartIndex++)
+                {
+
+                    if ((int)car.Position == tracePartIndex)
+                        line += 'C';
+                    else
+                        line += '_';
+                }
+                line += '\n';
+                textToWrite.Add(line);
+            }
+
+            WriteTextQuickly(textToWrite, 0, 0);
+            
+        }
         async void RacingCycle(int delayBeetwenUpdates)
         {
             await Task.Run(async () => // Чтобы можно было выключить в любой момент
             {
                 while (!IsFinished())
                 {
+                    
                     Updated();
                     WriteCarsPositions();
                     await Task.Delay(delayBeetwenUpdates);
@@ -68,12 +86,12 @@ namespace CarRacing.Classes
             });
         }
 
-        private Car FindWinCar()
+        private Car FindWinCar()// Если 2 или больше машин закончили одновременно побеждает та, что проехала дальше
         {
             Car winCar = Cars.ElementAt(0);
             foreach (var car in Cars)
             {
-                if(winCar.Position < car.Position)
+                if (winCar.Position < car.Position)
                 {
                     winCar = car;
                 }
@@ -85,7 +103,7 @@ namespace CarRacing.Classes
         {
             foreach (var car in Cars)
             {
-                if (car.Position >= 100)
+                if (car.Position >= _traceLenght)
                     return true;
             }
             return false;
