@@ -32,7 +32,7 @@ namespace CarRacing.Classes
         }
         private void WriteCarsPositions()
         {
-            
+            Console.CursorVisible = false;
             List<string> textToWrite = new List<string>();
             foreach (var car in Cars)
             {
@@ -46,11 +46,13 @@ namespace CarRacing.Classes
                 foreach (var ch in str)
                 {
                     Console.SetCursorPosition(j, i); // Быстрое обновление консоли
+                    
                     Console.Write(ch);
                     j++;
                 }
                 i++;
             }
+            Console.CursorVisible = true;
         }
         async void RacingCycle(int delayBeetwenUpdates)
         {
@@ -62,7 +64,7 @@ namespace CarRacing.Classes
                     WriteCarsPositions();
                     await Task.Delay(delayBeetwenUpdates);
                 }
-                Finished(FindWinCar());
+                Finished(FindWinCar()); // Если 2 или больше машин закончили одновременно побеждает та, что проехала дальше
             });
         }
 
