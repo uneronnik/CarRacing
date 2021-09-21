@@ -17,33 +17,33 @@ namespace CarRacing.Classes
             Name = name;
         }
         
-        public int CurrentSpeed
+        public double CurrentSpeed
         {
             get
             {
-                return _random.Next(1, _maxSpeed);
+                return _random.Next(1, _maxSpeed) / (double)60;
             }
         }
-        public int Position { get; private set; }
+        public double Position { get; private set; }
         public string Name { get; set; }
 
-        public  void Drive()
+        public void Drive()
         {
             Position += CurrentSpeed;
         }
         private void OnUpdated()
         {
-            Console.WriteLine($"{Name}: {Position}");
             Drive();
+           
         }
         public void SubscribeOnGameEvents(Game game)
         {
             game.Updated += OnUpdated;
             game.Finished += OnFinished;
         }
-        private void OnFinished()
+        private void OnFinished(Car winCar)
         {
-            if(Position >= 100)
+            if(this == winCar)
                 Console.WriteLine($"Машина {Name} победила!");
         }
         

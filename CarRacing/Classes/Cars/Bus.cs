@@ -9,7 +9,7 @@ namespace CarRacing.Classes.Cars
     class Bus : Car
     {
 
-        const int _maxSpeed = 5;
+        const int _maxSpeed = 30;
         public Bus(Random speedRandomizer, string name) : base(_maxSpeed, speedRandomizer, name)
         {
         }

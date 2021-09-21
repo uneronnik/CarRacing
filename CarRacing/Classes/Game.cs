@@ -10,9 +10,10 @@ namespace CarRacing.Classes
     
     class Game
     {
-        public delegate void RacingHandler();
-        public event RacingHandler Updated;
-        public event RacingHandler Finished;
+        public delegate void UpdateHandler();
+        public delegate void FinishHandler(Car WinCar);
+        public event UpdateHandler Updated;
+        public event FinishHandler Finished;
         List<Car> _cars = new List<Car>();
 
         public Game(List<Car> cars)
@@ -29,15 +30,53 @@ namespace CarRacing.Classes
         {
             RacingCycle(delayBeetwenUpdates);
         }
+        private void WriteCarsPositions()
+        {
+            
+            List<string> textToWrite = new List<string>();
+            foreach (var car in Cars)
+            {
+                textToWrite.Add($"{car.Name}: {Math.Round(car.Position, 2)}\n");
+            }
+            int i = 0;
+            
+            foreach (var str in textToWrite)
+            {
+                int j = 0;
+                foreach (var ch in str)
+                {
+                    Console.SetCursorPosition(j, i); // Быстрое обновление консоли
+                    Console.Write(ch);
+                    j++;
+                }
+                i++;
+            }
+        }
         async void RacingCycle(int delayBeetwenUpdates)
         {
-            while(!IsFinished())
+            await Task.Run(async () => // Чтобы можно было выключить в любой момент
             {
-                Console.Clear();
-                Updated();
-                await Task.Delay(delayBeetwenUpdates);
+                while (!IsFinished())
+                {
+                    Updated();
+                    WriteCarsPositions();
+                    await Task.Delay(delayBeetwenUpdates);
+                }
+                Finished(FindWinCar());
+            });
+        }
+
+        private Car FindWinCar()
+        {
+            Car winCar = Cars.ElementAt(0);
+            foreach (var car in Cars)
+            {
+                if(winCar.Position < car.Position)
+                {
+                    winCar = car;
+                }
             }
-            Finished();
+            return winCar;
         }
 
         bool IsFinished()

@@ -9,6 +9,7 @@ namespace CarRacing
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             List<Car> cars = new List<Car>();
@@ -27,8 +28,10 @@ namespace CarRacing
 
             Game game = new Game(cars);
 
-            game.StartRacing(500);
-            
+            game.StartRacing(100);
+
+
+
             Console.ReadKey();
         }
     }
